@@ -1,0 +1,86 @@
+{
+  "id": "sports",
+  "name": "体育",
+  "emoji": "⚽",
+  "description": "足球 / 篮球 / 赛车",
+  "keywords": [
+    "nba",
+    "nfl",
+    "mlb",
+    "premier league",
+    "champions league",
+    "la liga",
+    "serie a",
+    "f1",
+    "formula 1",
+    "grand prix",
+    "world cup",
+    "olympics",
+    "transfer",
+    "injury",
+    "playoff",
+    "trade",
+    "draft",
+    "coach",
+    "season",
+    "match",
+    "fixture",
+    "足球",
+    "篮球",
+    "英超",
+    "欧冠",
+    "西甲",
+    "世界杯",
+    "奥运",
+    "转会",
+    "季后赛",
+    "赛车"
+  ],
+  "filterSources": [
+    "rss"
+  ],
+  "x": {
+    "handles": [
+      "ESPN",
+      "NBA",
+      "F1",
+      "FabrizioRomano",
+      "wojespn",
+      "AdamSchefter"
+    ],
+    "maxPerHandle": 6
+  },
+  "influencers": [
+    {
+      "handle": "FabrizioRomano",
+      "name": "Fabrizio Romano",
+      "focus": "欧洲足球转会"
+    },
+    {
+      "handle": "wojespn",
+      "name": "Adrian Wojnarowski",
+      "focus": "NBA 交易与人事"
+    }
+  ],
+  "rss": [
+    {
+      "name": "Yahoo Sports",
+      "url": "https://sports.yahoo.com/rss/",
+      "weight": 1.0
+    },
+    {
+      "name": "Motorsport",
+      "url": "https://www.motorsport.com/rss/all/news/",
+      "weight": 1.1
+    }
+  ],
+  "hackernews": {
+    "enabled": false
+  },
+  "github": {
+    "enabled": false
+  },
+  "arxiv": {
+    "enabled": false
+  }
+}

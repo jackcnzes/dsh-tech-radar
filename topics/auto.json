@@ -1,0 +1,30 @@
+{
+  "id": "auto",
+  "name": "汽车",
+  "emoji": "🚗",
+  "description": "新能源 / 智能驾驶 / 新车",
+  "keywords": [
+    "tesla", "ev", "electric vehicle", "autonomous", "self-driving", "lidar",
+    "battery", "charging", "hybrid", "suv", "pickup", "range", "ota", "adas",
+    "新能源", "自动驾驶", "电动车", "续航", "充电", "电池", "智能座舱", "增程"
+  ],
+  "filterSources": ["rss"],
+  "x": {
+    "handles": ["Tesla", "InsideEVs", "MotorTrend", "caranddriver", "Electrek_co"],
+    "maxPerHandle": 6
+  },
+  "influencers": [
+    { "handle": "Electrek_co", "name": "Electrek", "focus": "电动车产业与政策" }
+  ],
+  "rss": [
+    { "name": "Electrek", "url": "https://electrek.co/feed/", "weight": 1.2 },
+    { "name": "InsideEVs", "url": "https://insideevs.com/rss/news/all/", "weight": 1.1 },
+    { "name": "Motor1", "url": "https://www.motor1.com/rss/news/all/", "weight": 1.0 },
+    { "name": "Car and Driver", "url": "https://www.caranddriver.com/rss/all.xml", "weight": 1.0 },
+    { "name": "Autoweek", "url": "https://www.autoweek.com/rss/all.xml", "weight": 0.9 },
+    { "name": "Motorsport", "url": "https://www.motorsport.com/rss/all/news/", "weight": 0.9 }
+  ],
+  "hackernews": { "enabled": false },
+  "github": { "enabled": false },
+  "arxiv": { "enabled": false }
+}

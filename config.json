@@ -1,0 +1,32 @@
+{
+  "$comment": "全局配置。主题内容在 topics/<id>.json，用 activeTopics 选择同时跑哪几个；GUI 插件会覆盖这一项。",
+  "timezone": "Asia/Shanghai",
+  "activeTopics": [
+    "tech"
+  ],
+  "briefing": {
+    "language": "zh-CN",
+    "maxItemsPerTopic": 8,
+    "lookbackHours": 24
+  },
+  "im": {
+    "$comment": "kind: feishu | dingtalk | slack | telegram | generic。webhook 留空则只写本地文件不推送。",
+    "kind": "feishu",
+    "webhook": "",
+    "secret": "",
+    "telegram": {
+      "token": "",
+      "chatId": ""
+    }
+  },
+  "sources": {
+    "x": true,
+    "rss": true,
+    "hn": true,
+    "github": true,
+    "arxiv": true,
+    "telegram": false,
+    "bilibili": false
+  },
+  "outputDir": "../tech-radar"
+}

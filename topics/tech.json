@@ -1,0 +1,139 @@
+{
+  "id": "tech",
+  "name": "技术",
+  "emoji": "🧠",
+  "description": "AI / 开源 / 开发者工具",
+  "keywords": [
+    "ai",
+    "llm",
+    "gpt",
+    "claude",
+    "gemini",
+    "llama",
+    "qwen",
+    "deepseek",
+    "mistral",
+    "agent",
+    "agents",
+    "rag",
+    "transformer",
+    "diffusion",
+    "multimodal",
+    "embedding",
+    "inference",
+    "fine-tun",
+    "pretrain",
+    "rlhf",
+    "reasoning",
+    "mcp",
+    "tool call",
+    "openai",
+    "anthropic",
+    "nvidia",
+    "cuda",
+    "gpu",
+    "tpu",
+    "training",
+    "model",
+    "dataset",
+    "benchmark",
+    "eval",
+    "sota",
+    "token",
+    "copilot",
+    "cursor",
+    "codex",
+    "coding agent",
+    "open source",
+    "大模型",
+    "智能体",
+    "推理",
+    "微调",
+    "训练",
+    "算力",
+    "开源"
+  ],
+  "filterSources": [
+    "hn",
+    "rss"
+  ],
+  "x": {
+    "handles": [
+      "OpenAI",
+      "AnthropicAI",
+      "GoogleDeepMind",
+      "huggingface",
+      "LangChainAI"
+    ],
+    "maxPerHandle": 8
+  },
+  "influencers": [
+    {
+      "handle": "karpathy",
+      "name": "Andrej Karpathy",
+      "focus": "模型训练与工程实践"
+    },
+    {
+      "handle": "simonw",
+      "name": "Simon Willison",
+      "focus": "LLM 工具链与安全"
+    },
+    {
+      "handle": "sama",
+      "name": "Sam Altman",
+      "focus": "OpenAI 产品与战略"
+    },
+    {
+      "handle": "DrJimFan",
+      "name": "Jim Fan",
+      "focus": "具身智能与 Agent"
+    },
+    {
+      "handle": "_akhaliq",
+      "name": "AK",
+      "focus": "论文速递"
+    }
+  ],
+  "rss": [
+    {
+      "name": "OpenAI Blog",
+      "url": "https://openai.com/news/rss.xml",
+      "weight": 1.2
+    },
+    {
+      "name": "Google DeepMind",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "weight": 1.1
+    },
+    {
+      "name": "Hugging Face Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "weight": 1.0
+    },
+    {
+      "name": "Simon Willison",
+      "url": "https://simonwillison.net/atom/everything/",
+      "weight": 1.0
+    }
+  ],
+  "hackernews": {
+    "minPoints": 80,
+    "limit": 30
+  },
+  "github": {
+    "since": "daily",
+    "limit": 15
+  },
+  "arxiv": {
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ],
+    "limit": 15
+  },
+  "telegram": [
+    "deepmind",
+    "anthropicAI"
+  ]
+}

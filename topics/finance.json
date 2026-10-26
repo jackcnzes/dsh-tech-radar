@@ -1,0 +1,24 @@
+{
+  "id": "finance",
+  "name": "财经",
+  "emoji": "📈",
+  "description": "市场 / 宏观 / 公司财报",
+  "keywords": [
+    "stock", "market", "earnings", "revenue", "fed", "inflation", "rate", "yield",
+    "ipo", "merger", "acquisition", "nasdaq", "dow", "s&p", "tariff", "gdp", "layoff",
+    "股价", "财报", "加息", "降息", "通胀", "市值", "ipo", "并购", "关税", "裁员", "营收"
+  ],
+  "filterSources": ["rss"],
+  "x": {
+    "handles": ["CNBC", "markets", "business"],
+    "maxPerHandle": 6
+  },
+  "influencers": [],
+  "rss": [
+    { "name": "MarketWatch", "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories", "weight": 1.1 },
+    { "name": "CNBC", "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "weight": 1.2 }
+  ],
+  "hackernews": { "enabled": false },
+  "github": { "enabled": false },
+  "arxiv": { "enabled": false }
+}

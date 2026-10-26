@@ -1,0 +1,5 @@
+# 路径全部由插件包自身推导，不再写死绝对路径。
+# 需要覆盖时在这里加 config: { topicsDir: ..., stateFile: ..., sourcesFile: ... }
+- insert:
+    - id: tech-radar
+      name: '@local/dsh-tech-radar'

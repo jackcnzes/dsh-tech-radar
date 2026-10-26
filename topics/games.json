@@ -1,0 +1,24 @@
+{
+  "id": "games",
+  "name": "游戏",
+  "emoji": "🎮",
+  "description": "新作 / 主机 / 电竞",
+  "keywords": [
+    "game", "gaming", "steam", "playstation", "xbox", "nintendo", "switch", "ps5",
+    "release", "dlc", "patch", "update", "esports", "tournament", "review", "launch",
+    "游戏", "发售", "主机", "电竞", "公测", "版本更新", "dlc", "独占"
+  ],
+  "filterSources": ["rss"],
+  "x": {
+    "handles": ["Steam", "PlayStation", "Xbox", "NintendoAmerica"],
+    "maxPerHandle": 6
+  },
+  "influencers": [],
+  "rss": [
+    { "name": "PC Gamer", "url": "https://www.pcgamer.com/rss/", "weight": 1.1 },
+    { "name": "Rock Paper Shotgun", "url": "https://www.rockpapershotgun.com/feed", "weight": 1.0 }
+  ],
+  "hackernews": { "enabled": false },
+  "github": { "enabled": false },
+  "arxiv": { "enabled": false }
+}
