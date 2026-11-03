@@ -26,6 +26,7 @@ import {
   parseGitHubTrending,
   parseHackerNews,
   parseTelegram,
+  parseWeiboHotSearch,
   parseXSyndication,
   parseXTimeline,
 } from './lib/parse.mjs';
@@ -360,6 +361,45 @@ if (sources.bilibili) {
       retries: 1,
     });
     return parseBilibili(json, 30).map((item) => ({ ...item, sourceTopics: activeIds }));
+  }]);
+}
+
+if (sources.weibo) {
+  collectors.push(['weibo', async () => {
+    // 微博热搜需要 Referer，否则 403；用 curl 子进程与 X 一致
+    const raw = await curlText('https://weibo.com/ajax/side/hotSearch', {
+      timeoutSec: 20,
+      headers: {
+        referer: 'https://weibo.com/',
+        accept: 'application/json, text/plain, */*',
+        'x-requested-with': 'XMLHttpRequest',
+      },
+    });
+    const payload = JSON.parse(raw);
+
+    // 按启用主题各自的关键词过滤，命中任一主题即保留
+    const byTopic = new Map();
+    for (const topic of active) {
+      if (topic.weibo?.enabled === false) continue;
+      byTopic.set(topic.id, topic.weibo?.keywords ?? topic.keywords ?? []);
+    }
+
+    const all = [];
+    const seenWords = new Set();
+    for (const [topicId, keywords] of byTopic) {
+      const hits = parseWeiboHotSearch(payload, keywords, 15);
+      for (const hit of hits) {
+        if (seenWords.has(hit.title)) {
+          const existing = all.find((x) => x.title === hit.title);
+          if (existing && !existing.sourceTopics.includes(topicId)) existing.sourceTopics.push(topicId);
+          continue;
+        }
+        seenWords.add(hit.title);
+        all.push({ ...hit, sourceTopics: [topicId] });
+      }
+    }
+    console.error(`      微博热搜 ${payload?.data?.realtime?.length ?? 0} 条 → 命中 ${all.length} 条`);
+    return all;
   }]);
 }
 

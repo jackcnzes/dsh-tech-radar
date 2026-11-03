@@ -37,6 +37,16 @@ node collect.mjs --all
 
 已知情况：Telegram 上真正的官方科技频道基本已停更（`openai_news` 最新 2021 年、`anthropicai` 最新 2023 年），而 `t.me/s/deepmind` 被一个叫「Ai官方频道」的广告号占用。所以 Telegram 长期为 0 条是正常的，不是故障。
 
+### 微博热搜
+
+**微博必须进日报。** 用 `weibo.com/ajax/side/hotSearch`，**必须带 `Referer: https://weibo.com/`**，否则一律 403（实测：不带 403，带 200）。
+
+- 返回 50 条热搜，每条有 `word` / `num`（热度）/ `label_name`（新/沸/热）
+- 按主题的 `weibo.keywords` 过滤：`tech` 抓科技类、`auto` 抓汽车类
+- 一条热搜同时命中多个主题时，会合并进两个栏目
+- 写简报时**必须带上热度数字**（如「热度 76 万」），这是微博相对其他源最有价值的信号
+- 若当天 0 条命中，在文末说明「微博热搜无科技/汽车相关话题」，不要静默跳过
+
 ### X 的采集方式
 
 **首选 X 官方 syndication 接口**（`syndication.twitter.com/srv/timeline-profile/screen-name/<handle>`）：免费、无需 key、返回结构化 JSON（真实时间戳 + 单条推文链接 + 点赞数）。失败时才回落到 `r.jina.ai`。
