@@ -1,0 +1,33 @@
+{
+  "id": "chip",
+  "name": "芯片硬件",
+  "emoji": "🔧",
+  "description": "半导体 / GPU / 消费电子",
+  "keywords": [
+    "chip", "semiconductor", "gpu", "cpu", "tpu", "nvidia", "amd", "intel", "tsmc",
+    "arm", "risc-v", "wafer", "lithography", "hbm", "foundry", "asic", "fpga",
+    "苹果", "iPhone", "小米", "华为", "麒麟", "骁龙", "芯片", "半导体", "光刻", "晶圆",
+    "制程", "封装", "算力", "显卡", "内存"
+  ],
+  "filterSources": ["hn", "rss", "weibo", "douyin", "bilibili"],
+  "x": {
+    "handles": ["nvidia", "Intel", "AMD", "TSMC_News", "tomshardware"],
+    "maxPerHandle": 6
+  },
+  "influencers": [],
+  "weibo": {
+    "enabled": true,
+    "keywords": ["芯片", "半导体", "光刻", "台积电", "英伟达", "GPU", "CPU", "华为", "麒麟", "小米", "苹果", "iPhone", "骁龙", "鸿蒙", "制程", "算力", "显卡", "固态", "内存"]
+  },
+  "douyin": {
+    "enabled": true,
+    "keywords": ["芯片", "半导体", "英伟达", "华为", "小米", "苹果", "GPU", "显卡", "光刻"]
+  },
+  "rss": [
+    { "name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all", "weight": 1.2 },
+    { "name": "SemiEngineering", "url": "https://semiengineering.com/feed/", "weight": 1.1 }
+  ],
+  "hackernews": { "minPoints": 60, "limit": 20 },
+  "github": { "since": "daily", "limit": 8 },
+  "arxiv": { "enabled": false }
+}

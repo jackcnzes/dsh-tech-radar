@@ -4,21 +4,142 @@
   "emoji": "📈",
   "description": "市场 / 宏观 / 公司财报",
   "keywords": [
-    "stock", "market", "earnings", "revenue", "fed", "inflation", "rate", "yield",
-    "ipo", "merger", "acquisition", "nasdaq", "dow", "s&p", "tariff", "gdp", "layoff",
-    "股价", "财报", "加息", "降息", "通胀", "市值", "ipo", "并购", "关税", "裁员", "营收"
+    "stock",
+    "market",
+    "earnings",
+    "revenue",
+    "fed",
+    "inflation",
+    "rate",
+    "yield",
+    "ipo",
+    "merger",
+    "acquisition",
+    "nasdaq",
+    "dow",
+    "s&p",
+    "tariff",
+    "gdp",
+    "layoff",
+    "股价",
+    "财报",
+    "加息",
+    "降息",
+    "通胀",
+    "市值",
+    "ipo",
+    "并购",
+    "关税",
+    "裁员",
+    "营收"
   ],
-  "filterSources": ["rss"],
+  "filterSources": [
+    "rss"
+  ],
   "x": {
-    "handles": ["CNBC", "markets", "business"],
+    "handles": [
+      "CNBC",
+      "markets",
+      "business"
+    ],
     "maxPerHandle": 6
   },
   "influencers": [],
   "rss": [
-    { "name": "MarketWatch", "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories", "weight": 1.1 },
-    { "name": "CNBC", "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "weight": 1.2 }
+    {
+      "name": "MarketWatch",
+      "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+      "weight": 1.1
+    },
+    {
+      "name": "CNBC",
+      "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "weight": 1.2
+    }
   ],
-  "hackernews": { "enabled": false },
-  "github": { "enabled": false },
-  "arxiv": { "enabled": false }
+  "hackernews": {
+    "enabled": false
+  },
+  "github": {
+    "enabled": false
+  },
+  "arxiv": {
+    "enabled": false
+  },
+  "weibo": {
+    "enabled": true,
+    "keywords": [
+      "A股",
+      "股市",
+      "沪指",
+      "深成指",
+      "创业板",
+      "涨停",
+      "跌停",
+      "茅台",
+      "宁德时代",
+      "比亚迪",
+      "银行",
+      "券商",
+      "基金",
+      "央行",
+      "降准",
+      "降息",
+      "LPR",
+      "人民币",
+      "汇率",
+      "GDP",
+      "CPI",
+      "通胀",
+      "财报",
+      "IPO",
+      "美股",
+      "纳斯达克",
+      "港股",
+      "恒生",
+      "黄金",
+      "原油",
+      "比特币",
+      "以太坊",
+      "加密货币"
+    ]
+  },
+  "douyin": {
+    "enabled": true,
+    "keywords": [
+      "A股",
+      "股市",
+      "沪指",
+      "深成指",
+      "创业板",
+      "涨停",
+      "跌停",
+      "茅台",
+      "宁德时代",
+      "比亚迪",
+      "银行",
+      "券商",
+      "基金",
+      "央行",
+      "降准",
+      "降息",
+      "LPR",
+      "人民币",
+      "汇率",
+      "GDP",
+      "CPI",
+      "通胀",
+      "财报",
+      "IPO",
+      "美股",
+      "纳斯达克",
+      "港股",
+      "恒生",
+      "黄金",
+      "原油",
+      "比特币",
+      "以太坊",
+      "加密货币"
+    ]
+  }
 }

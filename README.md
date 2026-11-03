@@ -74,7 +74,7 @@ dsh-tech-radar/            代码与配置（可安装的插件包）
 ├── lib/
 │   ├── http.mjs           带超时/重试的 fetch、内容哈希
 │   └── parse.mjs          各来源解析器
-├── topics/                主题包（6 个）
+├── topics/                主题包（9 个）
 ├── settings/              GUI 写入的开关
 │   ├── topics.json
 │   └── sources.json
@@ -141,7 +141,21 @@ IM_WEBHOOK='https://open.feishu.cn/open-apis/bot/v2/hook/xxx' \
 - `telegram`：频道名（`t.me/s/` 后面的部分）。
 - `hackernews` / `github` / `arxiv`：设 `enabled: false` 可让该主题跳过这些来源。
 
-内置 6 个主题：`tech`、`sports`、`auto`、`finance`、`games`、`science`。
+内置 9 个主题，按领域细分：
+
+| id | 主题 | 说明 |
+|---|---|---|
+| `ai` | 🤖 AI 大模型 | 模型发布 / 能力评测 / agent（OpenAI、DeepMind、HF、4 位大V、arXiv） |
+| `chip` | 🔧 芯片硬件 | 半导体 / GPU / 消费电子（Tom's Hardware、SemiEngineering） |
+| `security` | 🛡️ 网络安全 | 漏洞 / 攻击事件 / 数据泄露（Dark Reading、Krebs） |
+| `tech` | 🧠 开发者工具 | 开源 / 编程 / 工程实践（原 tech 收窄） |
+| `auto` | 🚗 汽车 | 新能源 / 智能驾驶 |
+| `finance` | 📈 财经 | 市场 / 宏观 / 财报 |
+| `games` | 🎮 游戏 | 新作 / 主机 / 电竞 |
+| `science` | 🔬 科学 | 前沿研究 / 论文 |
+| `sports` | ⚽ 体育 | 足球 / 篮球 / 赛车 |
+
+**微博与抖音关键词**：`ai`、`chip`、`security`、`tech`、`auto`、`finance` 六个主题都配了各自的社媒关键词，同一主题的微博热搜会带热度数字进对应栏目。
 
 **新增主题** = 加一个 JSON 文件，不用改代码；重开设置页就会出现在下拉里。
 

@@ -1,57 +1,43 @@
 {
   "id": "tech",
-  "name": "技术",
+  "name": "开发者工具",
   "emoji": "🧠",
-  "description": "AI / 开源 / 开发者工具",
+  "description": "开源项目 / 编程 / 工程实践",
   "keywords": [
-    "ai",
-    "llm",
-    "gpt",
-    "claude",
-    "gemini",
-    "llama",
-    "qwen",
-    "deepseek",
-    "mistral",
-    "agent",
-    "agents",
-    "rag",
-    "transformer",
-    "diffusion",
-    "multimodal",
-    "embedding",
-    "inference",
-    "fine-tun",
-    "pretrain",
-    "rlhf",
-    "reasoning",
-    "mcp",
-    "tool call",
-    "openai",
-    "anthropic",
-    "nvidia",
-    "cuda",
-    "gpu",
-    "tpu",
-    "training",
-    "model",
-    "dataset",
-    "benchmark",
-    "eval",
-    "sota",
-    "token",
-    "copilot",
-    "cursor",
-    "codex",
-    "coding agent",
     "open source",
-    "大模型",
-    "智能体",
-    "推理",
-    "微调",
-    "训练",
-    "算力",
-    "开源"
+    "github",
+    "developer",
+    "programming",
+    "compiler",
+    "runtime",
+    "framework",
+    "typescript",
+    "rust",
+    "python",
+    "golang",
+    "javascript",
+    "api",
+    "sdk",
+    "cli",
+    "ide",
+    "editor",
+    "devops",
+    "kubernetes",
+    "docker",
+    "database",
+    "sql",
+    "git",
+    "code review",
+    "refactor",
+    "开源",
+    "编程",
+    "开发者",
+    "编译器",
+    "框架",
+    "数据库",
+    "代码",
+    "工程师",
+    "重构"
   ],
   "filterSources": [
     "hn",
@@ -59,57 +45,21 @@
   ],
   "x": {
     "handles": [
-      "OpenAI",
-      "AnthropicAI",
-      "GoogleDeepMind",
-      "huggingface",
-      "LangChainAI"
+      "github",
+      "rustlang",
+      "typescript",
+      "ThePracticalDev"
     ],
-    "maxPerHandle": 8
+    "maxPerHandle": 5
   },
   "influencers": [
     {
       "handle": "karpathy",
       "name": "Andrej Karpathy",
-      "focus": "模型训练与工程实践"
-    },
-    {
-      "handle": "simonw",
-      "name": "Simon Willison",
-      "focus": "LLM 工具链与安全"
-    },
-    {
-      "handle": "sama",
-      "name": "Sam Altman",
-      "focus": "OpenAI 产品与战略"
-    },
-    {
-      "handle": "DrJimFan",
-      "name": "Jim Fan",
-      "focus": "具身智能与 Agent"
-    },
-    {
-      "handle": "_akhaliq",
-      "name": "AK",
-      "focus": "论文速递"
+      "focus": "工程实践"
     }
   ],
   "rss": [
-    {
-      "name": "OpenAI Blog",
-      "url": "https://openai.com/news/rss.xml",
-      "weight": 1.2
-    },
-    {
-      "name": "Google DeepMind",
-      "url": "https://deepmind.google/blog/rss.xml",
-      "weight": 1.1
-    },
-    {
-      "name": "Hugging Face Blog",
-      "url": "https://huggingface.co/blog/feed.xml",
-      "weight": 1.0
-    },
     {
       "name": "Simon Willison",
       "url": "https://simonwillison.net/atom/everything/",
@@ -125,12 +75,7 @@
     "limit": 15
   },
   "arxiv": {
-    "categories": [
-      "cs.AI",
-      "cs.CL",
-      "cs.LG"
-    ],
-    "limit": 15
+    "enabled": false
   },
   "telegram": [
     "openai_news",
@@ -139,59 +84,26 @@
   "weibo": {
     "enabled": true,
     "keywords": [
-      "AI",
-      "人工智能",
-      "大模型",
-      "芯片",
-      "半导体",
-      "算力",
-      "GPU",
-      "英伟达",
-      "华为",
-      "小米",
-      "苹果",
-      "iPhone",
-      "鸿蒙",
       "开源",
-      "机器人",
-      "自动驾驶",
-      "科技",
-      "互联网",
-      "字节",
-      "腾讯",
-      "阿里",
-      "百度",
-      "DeepSeek",
-      "大疆"
+      "编程",
+      "程序员",
+      "代码",
+      "GitHub",
+      "开发者",
+      "鸿蒙",
+      "Linux",
+      "数据库",
+      "架构"
     ]
   },
   "douyin": {
     "enabled": true,
     "keywords": [
-      "AI",
-      "人工智能",
-      "大模型",
-      "芯片",
-      "半导体",
-      "算力",
-      "GPU",
-      "英伟达",
-      "华为",
-      "小米",
-      "苹果",
-      "iPhone",
-      "鸿蒙",
+      "程序员",
+      "编程",
+      "代码",
       "开源",
-      "机器人",
-      "自动驾驶",
-      "科技",
-      "互联网",
-      "字节",
-      "腾讯",
-      "阿里",
-      "百度",
-      "DeepSeek",
-      "大疆"
+      "开发者"
     ]
   }
 }

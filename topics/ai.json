@@ -1,0 +1,42 @@
+{
+  "id": "ai",
+  "name": "AI 大模型",
+  "emoji": "🤖",
+  "description": "模型发布 / 能力评测 / agent",
+  "keywords": [
+    "llm", "gpt", "claude", "gemini", "llama", "qwen", "deepseek", "mistral", "kimi",
+    "agent", "agents", "rag", "transformer", "diffusion", "multimodal", "embedding",
+    "inference", "fine-tun", "pretrain", "rlhf", "reasoning", "mcp", "tool call",
+    "openai", "anthropic", "context window", "benchmark", "sota", "alignment",
+    "大模型", "智能体", "多模态", "推理模型", "微调", "对齐", "上下文"
+  ],
+  "filterSources": ["hn", "rss", "weibo", "douyin", "bilibili"],
+  "x": {
+    "handles": ["OpenAI", "AnthropicAI", "GoogleDeepMind", "huggingface", "LangChainAI", "MistralAI"],
+    "maxPerHandle": 8
+  },
+  "influencers": [
+    { "handle": "karpathy", "name": "Andrej Karpathy", "focus": "模型训练与工程实践" },
+    { "handle": "simonw", "name": "Simon Willison", "focus": "LLM 工具链与安全" },
+    { "handle": "sama", "name": "Sam Altman", "focus": "OpenAI 产品与战略" },
+    { "handle": "_akhaliq", "name": "AK", "focus": "论文速递" }
+  ],
+  "weibo": {
+    "enabled": true,
+    "keywords": ["AI", "人工智能", "大模型", "ChatGPT", "GPT", "Claude", "DeepSeek", "通义", "文心", "豆包", "Kimi", "智能体", "AI绘画", "AI写", "AIGC", "开源模型"]
+  },
+  "douyin": {
+    "enabled": true,
+    "keywords": ["AI", "人工智能", "大模型", "ChatGPT", "DeepSeek", "智能体", "AI绘画", "AIGC"]
+  },
+  "rss": [
+    { "name": "OpenAI Blog", "url": "https://openai.com/news/rss.xml", "weight": 1.2 },
+    { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml", "weight": 1.1 },
+    { "name": "Hugging Face Blog", "url": "https://huggingface.co/blog/feed.xml", "weight": 1.0 },
+    { "name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "weight": 1.0 },
+    { "name": "Lilian Weng", "url": "https://lilianweng.github.io/index.xml", "weight": 0.9 }
+  ],
+  "hackernews": { "minPoints": 80, "limit": 25 },
+  "github": { "since": "daily", "limit": 10 },
+  "arxiv": { "categories": ["cs.AI", "cs.CL", "cs.LG"], "limit": 12 }
+}

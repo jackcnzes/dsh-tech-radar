@@ -1,0 +1,32 @@
+{
+  "id": "security",
+  "name": "网络安全",
+  "emoji": "🛡️",
+  "description": "漏洞 / 攻击事件 / 数据泄露",
+  "keywords": [
+    "vulnerability", "cve", "exploit", "ransomware", "malware", "breach", "leak",
+    "phishing", "zero-day", "backdoor", "supply chain", "infosec", "threat",
+    "漏洞", "攻击", "泄露", "勒索", "木马", "钓鱼", "供应链攻击", "数据泄露", "安全"
+  ],
+  "filterSources": ["hn", "rss", "weibo", "douyin"],
+  "x": {
+    "handles": ["thehackersnews", "BleepinComputer", "k8em0", "GossiTheDog"],
+    "maxPerHandle": 6
+  },
+  "influencers": [],
+  "weibo": {
+    "enabled": true,
+    "keywords": ["漏洞", "攻击", "泄露", "勒索", "病毒", "木马", "钓鱼", "数据泄露", "黑客", "网络安全", "安全漏洞", "被黑"]
+  },
+  "douyin": {
+    "enabled": true,
+    "keywords": ["漏洞", "黑客", "数据泄露", "网络安全", "勒索病毒"]
+  },
+  "rss": [
+    { "name": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "weight": 1.2 },
+    { "name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "weight": 1.3 }
+  ],
+  "hackernews": { "minPoints": 80, "limit": 20 },
+  "github": { "enabled": false },
+  "arxiv": { "enabled": false }
+}
