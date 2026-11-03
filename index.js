@@ -25,18 +25,17 @@ export const inject = ['connection', 'webServer']
  *   blocked 平台侧不可达，只展示原因
  */
 const SOURCES = [
-  { id: 'x', name: 'X / Twitter', status: 'proxy', note: '经 r.jina.ai 渲染时间线，需要代理' },
+  { id: 'x', name: 'X / Twitter', status: 'proxy', note: 'curl 抓 syndication，需代理；配额 15 分钟 30 次' },
   { id: 'rss', name: 'RSS / Atom', status: 'ok', note: '任意站点的订阅源，最稳的一类' },
   { id: 'hn', name: 'Hacker News', status: 'ok', note: 'Algolia API' },
   { id: 'github', name: 'GitHub Trending', status: 'required', note: '每日热点的固定来源；失败自动降级到 Search API' },
   { id: 'arxiv', name: 'arXiv', status: 'ok', note: '官方 Atom API' },
-  { id: 'telegram', name: 'Telegram 频道', status: 'ok', note: 't.me/s 公开预览页' },
-  { id: 'bilibili', name: 'Bilibili 排行', status: 'blocked', note: '风控返回 -352，公开排行榜需 Cookie' },
-  { id: 'weibo', name: '微博', status: 'blocked', note: '热搜接口需登录态，实测 403' },
-  // 以下两个平台已确认不可用且不再纳入日报（2026-10-30 决定，由 GitHub 替代）
+  { id: 'telegram', name: 'Telegram 频道', status: 'ok', note: 't.me/s 预览页；官方科技频道多已停更' },
+  { id: 'weibo', name: '微博热搜', status: 'ok', note: '需带 Referer 头；按主题关键词过滤' },
+  { id: 'douyin', name: '抖音热榜', status: 'ok', note: 'iesdouyin 公开接口；按主题关键词过滤' },
+  { id: 'bilibili', name: 'Bilibili 热门', status: 'ok', note: 'popular 接口（ranking 会返回 -352 风控）' },
   { id: 'instagram', name: 'Instagram（已弃用）', status: 'blocked', note: '未登录一律跳登录页；已由 GitHub 替代' },
   { id: 'facebook', name: 'Facebook（已弃用）', status: 'blocked', note: '需登录，无公开接口；已由 GitHub 替代' },
-  { id: 'douyin', name: '抖音', status: 'blocked', note: '无公开 API，需签名与登录态' },
 ]
 
 /**

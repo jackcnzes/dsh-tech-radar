@@ -20,6 +20,8 @@ import { HttpError, curlText, getJson, getText, sleep } from './lib/http.mjs';
 import {
   parseArxiv,
   parseBilibili,
+  parseBilibiliPopular,
+  parseDouyinHot,
   parseFeed,
   filterGitHub,
   parseGitHubSearch,
@@ -353,20 +355,9 @@ if (sources.telegram && telegramChannels.size > 0) {
   }]);
 }
 
-if (sources.bilibili) {
-  collectors.push(['bilibili', async () => {
-    const json = await getJson('https://api.bilibili.com/x/web-interface/ranking/v2', {
-      headers: { referer: 'https://www.bilibili.com/' },
-      timeoutMs: 20_000,
-      retries: 1,
-    });
-    return parseBilibili(json, 30).map((item) => ({ ...item, sourceTopics: activeIds }));
-  }]);
-}
-
 if (sources.weibo) {
   collectors.push(['weibo', async () => {
-    // 微博热搜需要 Referer，否则 403；用 curl 子进程与 X 一致
+    // 微博热搜必须带 Referer，否则一律 403
     const raw = await curlText('https://weibo.com/ajax/side/hotSearch', {
       timeoutSec: 20,
       headers: {
@@ -377,28 +368,64 @@ if (sources.weibo) {
     });
     const payload = JSON.parse(raw);
 
-    // 按启用主题各自的关键词过滤，命中任一主题即保留
-    const byTopic = new Map();
+    const all = [];
+    const seen = new Set();
     for (const topic of active) {
       if (topic.weibo?.enabled === false) continue;
-      byTopic.set(topic.id, topic.weibo?.keywords ?? topic.keywords ?? []);
-    }
-
-    const all = [];
-    const seenWords = new Set();
-    for (const [topicId, keywords] of byTopic) {
-      const hits = parseWeiboHotSearch(payload, keywords, 15);
-      for (const hit of hits) {
-        if (seenWords.has(hit.title)) {
+      const keywords = topic.weibo?.keywords ?? topic.keywords ?? [];
+      for (const hit of parseWeiboHotSearch(payload, keywords, 15)) {
+        if (seen.has(hit.title)) {
           const existing = all.find((x) => x.title === hit.title);
-          if (existing && !existing.sourceTopics.includes(topicId)) existing.sourceTopics.push(topicId);
+          if (existing && !existing.sourceTopics.includes(topic.id)) existing.sourceTopics.push(topic.id);
           continue;
         }
-        seenWords.add(hit.title);
-        all.push({ ...hit, sourceTopics: [topicId] });
+        seen.add(hit.title);
+        all.push({ ...hit, sourceTopics: [topic.id] });
       }
     }
     console.error(`      微博热搜 ${payload?.data?.realtime?.length ?? 0} 条 → 命中 ${all.length} 条`);
+    return all;
+  }]);
+}
+
+if (sources.bilibili) {
+  collectors.push(['bilibili', async () => {
+    // ranking/v2 会返回 -352 风控，popular 接口正常
+    const raw = await curlText('https://api.bilibili.com/x/web-interface/popular?ps=30', {
+      timeoutSec: 20,
+      headers: { referer: 'https://www.bilibili.com/' },
+    });
+    const json = JSON.parse(raw);
+    if (json.code !== 0) throw new Error(`bilibili code=${json.code} ${json.message ?? ''}`);
+    return parseBilibiliPopular(json, 20).map((item) => ({ ...item, sourceTopics: activeIds }));
+  }]);
+}
+
+if (sources.douyin) {
+  collectors.push(['douyin', async () => {
+    const raw = await curlText('https://www.iesdouyin.com/web/api/v2/hotsearch/billboard/word/', {
+      timeoutSec: 20,
+      headers: { referer: 'https://www.douyin.com/' },
+    });
+    const payload = JSON.parse(raw);
+
+    // 和微博一样按主题关键词过滤
+    const all = [];
+    const seen = new Set();
+    for (const topic of active) {
+      if (topic.douyin?.enabled === false) continue;
+      const keywords = topic.douyin?.keywords ?? topic.weibo?.keywords ?? topic.keywords ?? [];
+      for (const hit of parseDouyinHot(payload, keywords, 15)) {
+        if (seen.has(hit.title)) {
+          const existing = all.find((x) => x.title === hit.title);
+          if (existing && !existing.sourceTopics.includes(topic.id)) existing.sourceTopics.push(topic.id);
+          continue;
+        }
+        seen.add(hit.title);
+        all.push({ ...hit, sourceTopics: [topic.id] });
+      }
+    }
+    console.error(`      抖音热搜 ${payload?.word_list?.length ?? 0} 条 → 命中 ${all.length} 条`);
     return all;
   }]);
 }

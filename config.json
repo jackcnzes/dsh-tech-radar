@@ -26,9 +26,10 @@
     "hn": true,
     "github": true,
     "arxiv": true,
-    "telegram": false,
-    "bilibili": false,
-    "weibo": true
+    "telegram": true,
+    "bilibili": true,
+    "weibo": true,
+    "douyin": true
   },
   "outputDir": "../tech-radar",
   "github": {
