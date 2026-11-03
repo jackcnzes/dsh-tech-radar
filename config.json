@@ -86,5 +86,18 @@
         ]
       }
     }
+  },
+  "x": {
+    "$comment": "X 采集。优先 syndication（免费/结构化），失败回落 r.jina.ai。批量抓取要控速，否则 429。",
+    "reader": "https://r.jina.ai/",
+    "batchSize": 3,
+    "batchPauseMs": 40000,
+    "delayMs": 1200,
+    "maxPerHandle": 8,
+    "maxPerHandleInfluencer": 6,
+    "maxHandlesPerRun": 9
+  },
+  "influencers": {
+    "maxPosts": 6
   }
 }

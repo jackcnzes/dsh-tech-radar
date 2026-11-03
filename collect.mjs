@@ -16,7 +16,7 @@ import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { HttpError, getJson, getText, sleep } from './lib/http.mjs';
+import { HttpError, curlText, getJson, getText, sleep } from './lib/http.mjs';
 import {
   parseArxiv,
   parseBilibili,
@@ -180,50 +180,82 @@ if (sources.x && xPlan.size > 0) {
   collectors.push(['x', async () => {
     const reader = config.x?.reader ?? 'https://r.jina.ai/';
     const delayMs = config.x?.delayMs ?? 1200;
+    const batchSize = config.x?.batchSize ?? 3;
+    const batchPauseMs = config.x?.batchPauseMs ?? 40_000;
+    const maxHandles = config.x?.maxHandlesPerRun ?? 9;
     const allPosts = [];
-    let networkMisses = 0;
+    let quotaExhausted = false;
 
-    for (const entry of xPlan.values()) {
-      try {
+    // syndication 的配额是 IP 级共享的：实测窗口 15 分钟、上限 30 次，
+    // 且每次请求内部可能重试，实际只够抓 9–10 个账号。
+    // 所以按优先级截断，而不是把所有账号都跑一遍把配额打光。
+    const targets = [...xPlan.values()].slice(0, maxHandles);
+    const skipped = xPlan.size - targets.length;
+    if (skipped > 0) {
+      console.error(`      X 本轮只抓前 ${targets.length} 个账号（配额限制），跳过 ${skipped} 个`);
+    }
+
+    const batches = [];
+    for (let i = 0; i < targets.length; i += batchSize) {
+      batches.push(targets.slice(i, i + batchSize));
+    }
+
+    console.error(`      X 分 ${batches.length} 批，每批 ${batchSize} 个账号，批间等待 ${batchPauseMs / 1000}s`);
+
+    for (const [batchIndex, batch] of batches.entries()) {
+      if (batchIndex > 0) {
+        console.error(`      等待 ${batchPauseMs / 1000}s 后开始第 ${batchIndex + 1} 批…`);
+        await sleep(batchPauseMs);
+      }
+
+      for (const entry of batch) {
         const limit = entry.person ? (config.influencers?.maxPosts ?? 6) : (config.x?.maxPerHandle ?? 8);
 
         // 首选 X 官方 syndication：免费、结构化、能给单条推文链接。
         // 失败时才回落到第三方渲染（r.jina.ai，需要代理且可能被限流/封禁）。
         let posts = [];
         try {
-          const page = await getText(
+          // 必须用 curl 子进程：Node fetch 的 TLS 指纹会被 syndication 判为 429
+          const page = await curlText(
             `https://syndication.twitter.com/srv/timeline-profile/screen-name/${entry.handle}`,
-            { timeoutMs: 15_000, retries: 1 },
+            { timeoutSec: 20 },
           );
           posts = parseXSyndication(page, entry.handle, limit);
+          if (posts.length === 0) console.error(`      @${entry.handle} syndication 返回空`);
         } catch (syndicationError) {
-          console.error(`      @${entry.handle} syndication 失败（${syndicationError.message}），回落 jina`);
+          if (syndicationError.rateLimited) {
+            console.error(`      @${entry.handle} 触发限流，本轮停止 X 采集（配额恢复需约 15 分钟）`);
+            quotaExhausted = true;
+            break;
+          }
+          console.error(`      @${entry.handle} syndication 失败（${syndicationError.message}）`);
         }
 
         if (posts.length === 0) {
-          const markdown = await getText(`${reader}https://x.com/${entry.handle}`, {
-            timeoutMs: 20_000,
-            retries: 0,
-          });
-          posts = parseXTimeline(markdown, entry.handle, limit);
+          try {
+            const markdown = await getText(`${reader}https://x.com/${entry.handle}`, {
+              timeoutMs: 20_000,
+              retries: 0,
+            });
+            posts = parseXTimeline(markdown, entry.handle, limit);
+          } catch (fallbackError) {
+            console.error(`      @${entry.handle} jina 回落也失败（${fallbackError.message}）`);
+          }
         }
 
         for (const post of posts) post.sourceTopics = [...entry.topics];
         allPosts.push(...posts);
         if (entry.person) entry.posts = posts;
-        networkMisses = 0;
-      } catch (error) {
-        console.error(`      @${entry.handle}: ${error.message}`);
-        // 只有网络类失败才计入熔断；404 之类是账号不存在，不该拖垮整轮
-        const networkFailure = !(error instanceof HttpError) || error.status === 429 || error.status >= 500;
-        if (networkFailure && ++networkMisses >= 2) {
-          console.error('      X 连续网络失败，跳过剩余账号（检查代理 / r.jina.ai）');
-          break;
-        }
-        if (!networkFailure) networkMisses = 0;
+
+        await sleep(delayMs);
       }
-      await sleep(delayMs);
+
+      if (quotaExhausted) break;
+
+      const okCount = allPosts.length;
+      console.error(`      第 ${batchIndex + 1}/${batches.length} 批完成，累计 ${okCount} 条`);
     }
+
     return allPosts;
   }]);
 }

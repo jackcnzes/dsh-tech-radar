@@ -39,9 +39,16 @@ node collect.mjs --all
 
 ### X 的采集方式
 
-**首选 X 官方 syndication 接口**（`syndication.twitter.com/srv/timeline-profile/screen-name/<handle>`）：免费、无需 key、返回结构化 JSON（真实时间戳 + 单条推文链接）。失败时才回落到 `r.jina.ai`。
+**首选 X 官方 syndication 接口**（`syndication.twitter.com/srv/timeline-profile/screen-name/<handle>`）：免费、无需 key、返回结构化 JSON（真实时间戳 + 单条推文链接 + 点赞数）。失败时才回落到 `r.jina.ai`。
 
-注意：syndication 对连续请求会返回 429 限流，冷却时间不固定。**不要反复重试**——采集器已经做了"失败即回落"，如果两条路都失败，本期就没有 X，按规则不拿旧内容填充。
+**必须用 curl 子进程抓，不能用 Node 的 fetch。** 实测同样 URL 同样 UA：curl 稳定 200，Node undici 稳定 429——服务端按 TLS 指纹区分客户端，改请求头绕不过去。代码里已封装为 `curlText()`。
+
+**配额是硬约束。** syndication 每个窗口（约 15 分钟）只给 30 次请求，且是 IP 级共享。实测每轮只能抓 3–5 个账号，之后必然 429。所以采集器：
+- 每轮最多抓 `x.maxHandlesPerRun`（默认 9）个账号，按顺序截断
+- 每 3 个一批，批间等 40 秒
+- 一旦识别到限流就立即停止本轮，不再浪费后续请求
+
+**不要反复重试。** 两条路都失败时，本期就没有 X，按规则不拿旧内容填充，并在文末数据说明里写清楚。
 
 - GitHub 数据在 `items` 里 `source === 'github'`，默认每期取 8–10 条。
 - 榜单会被盗版、DRM 绕过、玄学类仓库污染（如 `ziwei-doushu`），**必须人工筛掉与技术无关的**。
