@@ -27,7 +27,25 @@ node collect.mjs --all
 - **如果 X 来源为 0**：先看日志里有没有 `X 连续失败，跳过剩余账号`。这说明 `r.jina.ai` 或代理不可达（本机 DNS 是 fake-IP 模式时 `x.com` 走代理才通）。检查代理是否开启，不要反复重试浪费 4 分钟。
 - **如果 GitHub 报 `trending 页不可达`**：脚本已自动降级到 Search API，属于正常兜底，不用干预。
 
-产物：`$OUT/data/items-<DAY>.json`（每条带 `topics` 数组）、`data/voices-<DAY>.json`
+产物：`$OUT/data/items-<DAY>.json`（每条带 `topics` 数组）、`$OUT/data/voices-<DAY>.json`
+
+### 固定来源
+
+**GitHub 是每日热点的固定来源，必须出现在每期简报里。** Instagram 与 Facebook 已确认因登录墙不可用，自 2026-10-30 起不再纳入，由 GitHub 替代。
+
+**Telegram 也要进日报。** 只要 `items` 里有 `source === 'telegram'` 的条目，就必须收录进对应主题栏目，不能因为"内容少"而略过。若当天为 0 条，在文末数据说明里写清楚原因（频道停更 / 不可达 / 无新内容），不要静默跳过。
+
+已知情况：Telegram 上真正的官方科技频道基本已停更（`openai_news` 最新 2021 年、`anthropicai` 最新 2023 年），而 `t.me/s/deepmind` 被一个叫「Ai官方频道」的广告号占用。所以 Telegram 长期为 0 条是正常的，不是故障。
+
+### X 的采集方式
+
+**首选 X 官方 syndication 接口**（`syndication.twitter.com/srv/timeline-profile/screen-name/<handle>`）：免费、无需 key、返回结构化 JSON（真实时间戳 + 单条推文链接）。失败时才回落到 `r.jina.ai`。
+
+注意：syndication 对连续请求会返回 429 限流，冷却时间不固定。**不要反复重试**——采集器已经做了"失败即回落"，如果两条路都失败，本期就没有 X，按规则不拿旧内容填充。
+
+- GitHub 数据在 `items` 里 `source === 'github'`，默认每期取 8–10 条。
+- 榜单会被盗版、DRM 绕过、玄学类仓库污染（如 `ziwei-doushu`），**必须人工筛掉与技术无关的**。
+- 如果 GitHub 采集失败，脚本会自动降级到 Search API；两者都失败时在简报末尾注明。
 
 ### 多主题
 
@@ -47,7 +65,7 @@ node collect.mjs --all
 
 ## 2. 选题
 
-读 `$OUT/data/items-<DAY>.json`，按下面的规则筛到 **10–12 条**。
+读 `$OUT/data/items-<DAY>.json`，按下面的规则筛到 **共 30 条**（每个主题约 15 条，按 `config.json` 的 `briefing.maxItemsPerTopic` 取）。
 
 **必删：**
 - 与技术无关的：娱乐、体育、汽车、加密货币行情、纯政治表态。

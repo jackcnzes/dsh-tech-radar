@@ -224,6 +224,7 @@ window.__ModuleLoader__.load({
     /* ------------------------------------------------------------ 热点来源 */
 
     const STATUS_STYLE = {
+      required: { label: '固定来源', color: 'rgba(64,132,255,0.95)' },
       ok: { label: '可用', color: 'rgba(34,160,90,0.95)' },
       proxy: { label: '需代理', color: 'rgba(214,140,30,0.95)' },
       blocked: { label: '不可用', color: 'rgba(150,150,150,0.95)' },
@@ -255,6 +256,10 @@ window.__ModuleLoader__.load({
       const toggle = async (source) => {
         if (source.status === 'blocked') {
           setNotice(`${source.name} 不可用：${source.note}`)
+          return
+        }
+        if (source.status === 'required') {
+          setNotice(`${source.name} 是每日热点的固定来源，不能关闭`)
           return
         }
         const next = !source.enabled
@@ -339,7 +344,7 @@ window.__ModuleLoader__.load({
                 'button',
                 {
                   type: 'button',
-                  disabled: blocked || busy === source.id,
+                  disabled: blocked || source.status === 'required' || busy === source.id,
                   onClick: () => toggle(source),
                   style: button({
                     minWidth: 56,
@@ -347,10 +352,10 @@ window.__ModuleLoader__.load({
                     fontSize: 12,
                     borderColor: source.enabled && !blocked ? palette.accent : palette.border,
                     opacity: blocked ? 0.5 : busy === source.id ? 0.6 : 1,
-                    cursor: blocked || busy === source.id ? 'not-allowed' : 'pointer',
+                    cursor: blocked || source.status === 'required' || busy === source.id ? 'not-allowed' : 'pointer',
                   }),
                 },
-                blocked ? '—' : source.enabled ? '已启用' : '已停用',
+                blocked ? '—' : source.status === 'required' ? '固定' : source.enabled ? '已启用' : '已停用',
               ),
             )
           }),

@@ -21,10 +21,12 @@ import {
   parseArxiv,
   parseBilibili,
   parseFeed,
+  filterGitHub,
   parseGitHubSearch,
   parseGitHubTrending,
   parseHackerNews,
   parseTelegram,
+  parseXSyndication,
   parseXTimeline,
 } from './lib/parse.mjs';
 
@@ -126,8 +128,12 @@ console.error(`\n[tech-radar] ${TODAY}  主题：${active.map((t) => `${t.emoji 
 const rssPlan = new Map(); // url -> { feed, topics:Set }
 const xPlan = new Map();   // handle -> { handle, person, topics:Set }
 const hnCfg = { enabled: false, minPoints: Infinity, limit: 0 };
-const githubCfg = { enabled: false, since: 'daily', limit: 0 };
+const githubCfg = { enabled: false, since: 'daily', limit: 0, filter: config.github?.filter ?? {} };
 const arxivCfg = { enabled: false, categories: new Set(), limit: 0 };
+// 共享来源要按"哪个主题真的启用了它"打标，否则 tech 开的 HN 会被算进 science
+const hnTopics = new Set();
+const githubTopics = new Set();
+const arxivTopics = new Set();
 
 for (const topic of active) {
   for (const feed of topic.rss ?? []) {
@@ -147,15 +153,19 @@ for (const topic of active) {
     xPlan.set(person.handle, entry);
   }
   if (topic.hackernews?.enabled !== false) {
+    hnTopics.add(topic.id);
     hnCfg.enabled = true;
     hnCfg.minPoints = Math.min(hnCfg.minPoints, topic.hackernews?.minPoints ?? 80);
     hnCfg.limit = Math.max(hnCfg.limit, topic.hackernews?.limit ?? 30);
   }
   if (topic.github?.enabled !== false) {
+    githubTopics.add(topic.id);
     githubCfg.enabled = true;
     githubCfg.limit = Math.max(githubCfg.limit, topic.github?.limit ?? 15);
+    if (topic.github?.filter) githubCfg.filter = topic.github.filter;
   }
   if (topic.arxiv?.enabled !== false) {
+    arxivTopics.add(topic.id);
     arxivCfg.enabled = true;
     arxivCfg.limit = Math.max(arxivCfg.limit, topic.arxiv?.limit ?? 15);
     for (const category of topic.arxiv?.categories ?? []) arxivCfg.categories.add(category);
@@ -175,12 +185,29 @@ if (sources.x && xPlan.size > 0) {
 
     for (const entry of xPlan.values()) {
       try {
-        const markdown = await getText(`${reader}https://x.com/${entry.handle}`, {
-          timeoutMs: 20_000,
-          retries: 0,
-        });
         const limit = entry.person ? (config.influencers?.maxPosts ?? 6) : (config.x?.maxPerHandle ?? 8);
-        const posts = parseXTimeline(markdown, entry.handle, limit);
+
+        // 首选 X 官方 syndication：免费、结构化、能给单条推文链接。
+        // 失败时才回落到第三方渲染（r.jina.ai，需要代理且可能被限流/封禁）。
+        let posts = [];
+        try {
+          const page = await getText(
+            `https://syndication.twitter.com/srv/timeline-profile/screen-name/${entry.handle}`,
+            { timeoutMs: 15_000, retries: 1 },
+          );
+          posts = parseXSyndication(page, entry.handle, limit);
+        } catch (syndicationError) {
+          console.error(`      @${entry.handle} syndication 失败（${syndicationError.message}），回落 jina`);
+        }
+
+        if (posts.length === 0) {
+          const markdown = await getText(`${reader}https://x.com/${entry.handle}`, {
+            timeoutMs: 20_000,
+            retries: 0,
+          });
+          posts = parseXTimeline(markdown, entry.handle, limit);
+        }
+
         for (const post of posts) post.sourceTopics = [...entry.topics];
         allPosts.push(...posts);
         if (entry.person) entry.posts = posts;
@@ -217,26 +244,39 @@ if (sources.hn && hnCfg.enabled) {
     const since = Math.floor((Date.now() - (config.briefing?.lookbackHours ?? 24) * 3_600_000) / 1000);
     const url = `https://hn.algolia.com/api/v1/search?tags=story&hitsPerPage=${hnCfg.limit}`
       + `&numericFilters=created_at_i>${since},points>${hnCfg.minPoints}`;
-    return parseHackerNews(await getJson(url)).map((item) => ({ ...item, sourceTopics: activeIds }));
+    return parseHackerNews(await getJson(url)).map((item) => ({ ...item, sourceTopics: [...hnTopics] }));
   }]);
 }
 
 if (sources.github && githubCfg.enabled) {
   collectors.push(['github', async () => {
-    try {
-      const html = await getText(`https://github.com/trending?since=${githubCfg.since ?? 'daily'}`, {
-        timeoutMs: 20_000, retries: 1,
-      });
-      return parseGitHubTrending(html, githubCfg.limit).map((item) => ({ ...item, sourceTopics: activeIds }));
-    } catch (error) {
-      console.error(`      trending 页不可达（${error.message}），改用 GitHub Search API`);
-      const sinceDate = new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10);
-      const json = await getJson(
-        `https://api.github.com/search/repositories?q=created:>${sinceDate}&sort=stars&order=desc&per_page=${githubCfg.limit}`,
-        { headers: { accept: 'application/vnd.github+json' }, timeoutMs: 20_000, retries: 1 },
-      );
-      return parseGitHubSearch(json, githubCfg.limit).map((item) => ({ ...item, sourceTopics: activeIds }));
+    const raw = await (async () => {
+      try {
+        const html = await getText(`https://github.com/trending?since=${githubCfg.since ?? 'daily'}`, {
+          timeoutMs: 20_000, retries: 1,
+        });
+        return parseGitHubTrending(html, githubCfg.limit);
+      } catch (error) {
+        console.error(`      trending 页不可达（${error.message}），改用 GitHub Search API`);
+        const sinceDate = new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10);
+        const json = await getJson(
+          `https://api.github.com/search/repositories?q=created:>${sinceDate}&sort=stars&order=desc&per_page=${githubCfg.limit}`,
+          { headers: { accept: 'application/vnd.github+json' }, timeoutMs: 20_000, retries: 1 },
+        );
+        return parseGitHubSearch(json, githubCfg.limit);
+      }
+    })();
+
+    // 过滤掉盗版/DRM/玄学/攻击武器类仓库，避免污染简报
+    const { kept, dropped } = filterGitHub(raw, githubCfg.filter);
+    if (dropped.length > 0) {
+      console.error(`      已过滤 ${dropped.length} 个仓库：`);
+      for (const entry of dropped) {
+        console.error(`        - ${entry.title}  (${entry.reason})`);
+      }
     }
+
+    return kept.map((item) => ({ ...item, sourceTopics: [...githubTopics] }));
   }]);
 }
 
@@ -246,7 +286,7 @@ if (sources.arxiv && arxivCfg.enabled && arxivCfg.categories.size > 0) {
     const url = `https://export.arxiv.org/api/query?search_query=${query}`
       + `&sortBy=submittedDate&sortOrder=descending&max_results=${arxivCfg.limit}`;
     return parseArxiv(await getText(url, { timeoutMs: 60_000 }), arxivCfg.limit)
-      .map((item) => ({ ...item, sourceTopics: activeIds }));
+      .map((item) => ({ ...item, sourceTopics: [...arxivTopics] }));
   }]);
 }
 
@@ -265,14 +305,16 @@ if (sources.telegram && telegramChannels.size > 0) {
     for (const [channel, entry] of telegramChannels) {
       try {
         const html = await getText(`https://t.me/s/${channel}`, { timeoutMs: 20_000, retries: 1 });
-        all.push(...parseTelegram(html, channel).map((item) => ({
+        const items = parseTelegram(html, channel).map((item) => ({
           ...item,
           sourceTopics: [...entry.topics],
-        })));
+        }));
+        all.push(...items);
+        if (items.length === 0) console.error(`      t.me/${channel}: 0 条（频道可能已停更或页面结构变化）`);
       } catch (error) {
         console.error(`      t.me/${channel}: ${error.message}`);
       }
-      await sleep(800);
+      await sleep(1200);
     }
     return all;
   }]);

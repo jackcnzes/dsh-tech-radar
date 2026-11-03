@@ -6,8 +6,9 @@
   ],
   "briefing": {
     "language": "zh-CN",
-    "maxItemsPerTopic": 8,
-    "lookbackHours": 24
+    "maxItemsPerTopic": 15,
+    "lookbackHours": 24,
+    "maxItems": 30
   },
   "im": {
     "$comment": "kind: feishu | dingtalk | slack | telegram | generic。webhook 留空则只写本地文件不推送。",
@@ -28,5 +29,62 @@
     "telegram": false,
     "bilibili": false
   },
-  "outputDir": "../tech-radar"
+  "outputDir": "../tech-radar",
+  "github": {
+    "since": "daily",
+    "limit": 15,
+    "filter": {
+      "$comment": "榜单常被盗版/固件解锁/玄学类仓库污染。命中 block 即丢弃；若同时命中 allow 则保留（避免误伤安全检测工具）。",
+      "block": [
+        "decrypt",
+        "drm",
+        "keygen",
+        "crack",
+        "pirat",
+        "warez",
+        "nulled",
+        "unlock",
+        "jailbreak",
+        "bypass",
+        "激活码",
+        "破解",
+        "盗版",
+        "直链",
+        "紫微斗数",
+        "算命",
+        "风水",
+        "八字",
+        "占卜",
+        "塔罗",
+        "星座",
+        "运势",
+        "iptv",
+        "直播源",
+        "网盘"
+      ],
+      "exploit": {
+        "$comment": "含 cve/poc/exploit 的仓库默认丢弃——除非同时是防御侧工具。",
+        "match": [
+          "cve-",
+          "poc",
+          "exploit",
+          "0day"
+        ],
+        "rescue": [
+          "detect",
+          "detection",
+          "scan",
+          "scanner",
+          "checker",
+          "audit",
+          "defense",
+          "defence",
+          "patch",
+          "mitigat",
+          "monitor",
+          "protect"
+        ]
+      }
+    }
+  }
 }

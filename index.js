@@ -28,13 +28,14 @@ const SOURCES = [
   { id: 'x', name: 'X / Twitter', status: 'proxy', note: '经 r.jina.ai 渲染时间线，需要代理' },
   { id: 'rss', name: 'RSS / Atom', status: 'ok', note: '任意站点的订阅源，最稳的一类' },
   { id: 'hn', name: 'Hacker News', status: 'ok', note: 'Algolia API' },
-  { id: 'github', name: 'GitHub Trending', status: 'ok', note: '网页抓取，失败自动降级到 Search API' },
+  { id: 'github', name: 'GitHub Trending', status: 'required', note: '每日热点的固定来源；失败自动降级到 Search API' },
   { id: 'arxiv', name: 'arXiv', status: 'ok', note: '官方 Atom API' },
   { id: 'telegram', name: 'Telegram 频道', status: 'ok', note: 't.me/s 公开预览页' },
   { id: 'bilibili', name: 'Bilibili 排行', status: 'blocked', note: '风控返回 -352，公开排行榜需 Cookie' },
   { id: 'weibo', name: '微博', status: 'blocked', note: '热搜接口需登录态，实测 403' },
-  { id: 'instagram', name: 'Instagram', status: 'blocked', note: '未登录一律 302 到登录页，无帖子数据' },
-  { id: 'facebook', name: 'Facebook', status: 'blocked', note: '需登录，无公开读取接口' },
+  // 以下两个平台已确认不可用且不再纳入日报（2026-10-30 决定，由 GitHub 替代）
+  { id: 'instagram', name: 'Instagram（已弃用）', status: 'blocked', note: '未登录一律跳登录页；已由 GitHub 替代' },
+  { id: 'facebook', name: 'Facebook（已弃用）', status: 'blocked', note: '需登录，无公开接口；已由 GitHub 替代' },
   { id: 'douyin', name: '抖音', status: 'blocked', note: '无公开 API，需签名与登录态' },
 ]
 
@@ -196,6 +197,9 @@ export function apply(ctx, config = {}) {
         if (!known) return sendJson(res, 400, { error: `未知来源：${id}` })
         if (known.status === 'blocked') {
           return sendJson(res, 400, { error: `${known.name} 当前不可用：${known.note}` })
+        }
+        if (known.status === 'required' && !body.enabled) {
+          return sendJson(res, 400, { error: `${known.name} 是每日热点的固定来源，不能关闭` })
         }
         const next = Boolean(body.enabled)
         const state = await readJson(sourcesFile, { enabled: {} })

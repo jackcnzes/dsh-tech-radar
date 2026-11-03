@@ -25,7 +25,7 @@
 |---|---|---|---|
 | RSS / Atom | ✅ 可用 | 直连订阅源 | 最稳的一类，覆盖多数媒体与博客 |
 | Hacker News | ✅ 可用 | Algolia API | 结构化 JSON，一次可取 30 条 |
-| GitHub Trending | ✅ 可用 | 网页抓取 | 失败时自动降级到 Search API |
+| GitHub Trending | ✅ **固定来源** | 网页抓取 | 每日热点必含 8–10 条；失败时自动降级到 Search API |
 | arXiv | ✅ 可用 | 官方 Atom API | 按分类与提交时间排序 |
 | Telegram 频道 | ✅ 可用 | `t.me/s/<channel>` | 公开预览页，实测 17 条 |
 | X / Twitter | ⚠️ 需代理 | `r.jina.ai` 渲染 | 代理关闭即不可达；搜索页永远要登录 |

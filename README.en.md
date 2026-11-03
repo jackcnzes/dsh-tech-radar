@@ -25,7 +25,7 @@ This project exists because of this section: feasibility depends entirely on whe
 |---|---|---|---|
 | RSS / Atom | ✅ | Direct feeds | Most reliable; covers most outlets and blogs |
 | Hacker News | ✅ | Algolia API | Structured JSON, 30 items per call |
-| GitHub Trending | ✅ | HTML scrape | Falls back to the Search API on failure |
+| GitHub Trending | ✅ **required** | HTML scrape | Every daily brief includes 8–10 repos; falls back to the Search API |
 | arXiv | ✅ | Official Atom API | Sorted by category and submission date |
 | Telegram channels | ✅ | `t.me/s/<channel>` | Public preview page, 17 messages measured |
 | X / Twitter | ⚠️ proxy | Rendered via `r.jina.ai` | Unreachable without a proxy; search always requires login |

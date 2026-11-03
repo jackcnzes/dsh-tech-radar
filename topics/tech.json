@@ -133,7 +133,7 @@
     "limit": 15
   },
   "telegram": [
-    "deepmind",
-    "anthropicAI"
+    "openai_news",
+    "anthropicai"
   ]
 }
