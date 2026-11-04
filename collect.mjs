@@ -311,7 +311,27 @@ if (sources.github && githubCfg.enabled) {
       }
     }
 
-    return kept.map((item) => ({ ...item, sourceTopics: [...githubTopics] }));
+    // GitHub Trending 是全站综合榜，必须按各主题关键词过滤，
+    // 否则同一个仓库会同时出现在 AI / 芯片 / 安全 / 开发四个栏目里。
+    const all = [];
+    const seen = new Set();
+    for (const topic of active) {
+      if (topic.github?.enabled === false) continue;
+      const keywords = topic.github?.keywords ?? topic.keywords ?? [];
+      if (!keywords.length) continue;
+      for (const item of kept) {
+        const hay = `${item.title} ${item.text ?? ''}`.toLowerCase();
+        if (!keywords.some((k) => hay.includes(k.toLowerCase()))) continue;
+        if (seen.has(item.id)) {
+          const existing = all.find((x) => x.id === item.id);
+          if (existing && !existing.sourceTopics.includes(topic.id)) existing.sourceTopics.push(topic.id);
+          continue;
+        }
+        seen.add(item.id);
+        all.push({ ...item, sourceTopics: [topic.id] });
+      }
+    }
+    return all;
   }]);
 }
 
@@ -383,8 +403,25 @@ if (sources.weibo) {
         all.push({ ...hit, sourceTopics: [topic.id] });
       }
     }
-    console.error(`      微博热搜 ${payload?.data?.realtime?.length ?? 0} 条 → 命中 ${all.length} 条`);
-    return all;
+    // 同一事件常被拆成多条变体（「苹果天气」「苹果已修复天气bug」「苹果天气 极寒末世梗」），
+    // 前几个字往往不同，所以按「命中的关键词」分组：共享同一关键词且都命中的，
+    // 只保留热度最高的一条。
+    const clustered = new Map();
+    for (const item of all) {
+      const hay = item.title.toLowerCase();
+      const topicPack = topicPacks.get(item.sourceTopics[0]);
+      const matched = (topicPack?.weibo?.keywords ?? []).filter((k) => hay.includes(k.toLowerCase()));
+      // 取命中的关键词里最长的那个作为聚类键（最具体）
+      const key = matched.sort((a, b) => b.length - a.length)[0] ?? item.title.slice(0, 6);
+      const prev = clustered.get(key);
+      if (!prev || (item.metrics?.heat ?? 0) > (prev.metrics?.heat ?? 0)) clustered.set(key, item);
+    }
+    const deduped = [...clustered.values()];
+    if (deduped.length < all.length) {
+      console.error(`      微博同事件聚合：${all.length} 条 → ${deduped.length} 条`);
+    }
+    console.error(`      微博热搜 ${payload?.data?.realtime?.length ?? 0} 条 → 命中 ${deduped.length} 条`);
+    return deduped;
   }]);
 }
 
@@ -397,7 +434,29 @@ if (sources.bilibili) {
     });
     const json = JSON.parse(raw);
     if (json.code !== 0) throw new Error(`bilibili code=${json.code} ${json.message ?? ''}`);
-    return parseBilibiliPopular(json, 20).map((item) => ({ ...item, sourceTopics: activeIds }));
+
+    // B站热门是全站综合榜（游戏/美食/娱乐混杂），必须按主题关键词过滤，
+    // 否则会把「原神角色预告」塞进网络安全栏目。
+    const all = [];
+    const seen = new Set();
+    for (const topic of active) {
+      if (topic.bilibili?.enabled === false) continue;
+      const keywords = topic.bilibili?.keywords ?? topic.keywords ?? [];
+      if (!keywords.length) continue;
+      for (const item of parseBilibiliPopular(json, 30)) {
+        const hay = `${item.title} ${item.text ?? ''}`.toLowerCase();
+        if (!keywords.some((k) => hay.includes(k.toLowerCase()))) continue;
+        if (seen.has(item.id)) {
+          const existing = all.find((x) => x.id === item.id);
+          if (existing && !existing.sourceTopics.includes(topic.id)) existing.sourceTopics.push(topic.id);
+          continue;
+        }
+        seen.add(item.id);
+        all.push({ ...item, sourceTopics: [topic.id] });
+      }
+    }
+    console.error(`      B站热门 ${json?.data?.list?.length ?? 0} 条 → 命中 ${all.length} 条`);
+    return all;
   }]);
 }
 
