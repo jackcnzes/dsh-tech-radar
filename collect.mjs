@@ -492,12 +492,18 @@ if (sources.douyin) {
 async function runSource(name, collector) {
   if (onlySources && ![...onlySources].some((prefix) => name.startsWith(prefix))) return [];
   const started = Date.now();
+  // 每个源独立超时：X 要分批等待且 syndication 可能挂起，
+  // 不能让它拖住整轮采集。超时后返回已收集到的部分。
+  const budgetMs = name === 'x' ? 150_000 : 45_000;
   try {
-    const items = await collector();
+    const items = await Promise.race([
+      collector(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`超时 ${budgetMs / 1000}s`)), budgetMs)),
+    ]);
     console.error(`  ✓ ${name.padEnd(22)} ${String(items.length).padStart(3)} 条  ${Date.now() - started}ms`);
     return items;
   } catch (error) {
-    console.error(`  ✗ ${name.padEnd(22)} 失败: ${error.message}`);
+    console.error(`  ✗ ${name.padEnd(22)} ${error.message}`);
     return [];
   }
 }
